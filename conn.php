@@ -1,0 +1,7 @@
+<?php
+// 连接、选择数据库
+$link =  mysql_connect(SAE_MYSQL_HOST_M.':'.SAE_MYSQL_PORT,SAE_MYSQL_USER,SAE_MYSQL_PASS)//mysql_connect('localhost', 'root', '')
+    or die('Could not connect: ' . mysql_error());
+mysql_select_db(SAE_MYSQL_DB) or die('Could not select database');
+mysql_query("SET NAMES 'UTF8'");
+?>
