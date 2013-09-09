@@ -39,7 +39,14 @@
 	    //$k->init();
 	    //$k->get($type.$uid);////获得b的值
 	}	
-	
+	if($act == "kv"){
+		$uid = $_GET['uid'];
+		$table = $mysql->escape($type);
+		$k=new SaeKV();
+	    $k->init();
+	    $ret=$k->get($type.$uid);//获得b的值
+	    echo "var ".$table."kv= " . json_encode($ret) . ";";
+	}
 	if( $mysql->errno() != 0 )
 	{
 	    die( "Error:" . $mysql->errmsg() );

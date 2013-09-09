@@ -1,10 +1,16 @@
 $(function($) {
 	var fillgrid = function(table){
 		if(table == '#statistics') {return;}else{
+
 			function DummyLinkFormatter(row, cell, value, columnDef, dataContext) {
+				var constr ='&nbsp;&nbsp;';
+				if(table == '#proc' || table == '#item'){
+					constr += '<span data-type="'+table.substr(1)+'" data-uid="'+dataContext[columnDef.field]+'" class="btn btn-default btn-xs glyphicon glyphicon-align-justify"></span>&nbsp;&nbsp;';
+				}
 				var sa = ['<span data-type="'+table.substr(1)+'" class="btn btn-default btn-xs glyphicon glyphicon-plus"></span>&nbsp;&nbsp;',
 					"<span class='btn btn-default btn-xs glyphicon glyphicon-edit'></span>&nbsp;&nbsp;",
-					"<span data-type='"+table.substr(1)+"' data-uid='"+dataContext[columnDef.field]+"' class='btn btn-default btn-xs glyphicon glyphicon-trash'></span>"
+					"<span data-type='"+table.substr(1)+"' data-uid='"+dataContext[columnDef.field]+"' class='btn btn-default btn-xs glyphicon glyphicon-trash'></span>",
+					constr
 				];
 			    return sa.join('');
 			}
@@ -12,21 +18,21 @@ $(function($) {
 			    return row + 1;
 			}
 		  var columnsBasic = [
-		    {id: "number", name: "序号", field: "title", width: 100, formatter: RowNumberFormatter},
+		    {id: "number", name: "序号", field: "title", width: 80, formatter: RowNumberFormatter},
 		    {id: "title", name: "名称", field: "name", width: 200},
-		    {id: "owner", name: "创建人", field: "owner", width: 200},
-		    {id: "start", name: "创建日期", field: "mdtime", width: 150},
-		    {id: "actions", name: "操作", field: table.substr(1)+"id", width: 200, formatter: DummyLinkFormatter}
+		    {id: "owner", name: "创建人", field: "owner", width: 100},
+		    {id: "start", name: "创建日期", field: "mdtime", width: 100},
+		    {id: "actions", name: "操作", field: table.substr(1)+"id", width: 300, formatter: DummyLinkFormatter}
 		  ];
 		  	if(table =="#plan"){
 		  		columnsBasic = [
-				    {id: "number", name: "序号", field: "", width: 100, formatter: RowNumberFormatter},
-				    {id: "title", name: "股票代码", field: "stockid", width: 200},
-				    {id: "stock", name: "股票名称", field: "stockname", width: 200},
-				    {id: "owner", name: "创建人", field: "owner", width: 200},
+				    {id: "number", name: "序号", field: "", width: 80, formatter: RowNumberFormatter},
+				    {id: "title", name: "股票代码", field: "stockid", width: 100},
+				    {id: "stock", name: "股票名称", field: "stockname", width: 100},
+				    {id: "owner", name: "创建人", field: "owner", width: 100},
 				    {id: "owner", name: "策略", field: "proid", width: 200},
-				    {id: "start", name: "创建日期", field: "mdtime", width: 150},
-				    {id: "actions", name: "操作", field: table.substr(1)+"id", width: 200, formatter: DummyLinkFormatter}
+				    {id: "start", name: "创建日期", field: "mdtime", width: 100},
+				    {id: "actions", name: "操作", field: table.substr(1)+"id", width: 300, formatter: DummyLinkFormatter}
 				  ];
 		  	}
 
@@ -120,6 +126,36 @@ $(function($) {
 			} 
 		});
 	});
+	$('body').delegate('span.glyphicon-align-justify','hover', function() { 
+		//alert($(this).data('table')); 
+
+	});
+	$('body').popover({ html:true,container: 'body',
+		trigger:'hover',
+        selector: 'span.glyphicon-align-justify',
+        title:function(){
+        	var that;
+			var table = $(this).data('type');
+			if(table == 'proc') that = '项';
+			if(table == 'item') that = '条件';
+			return '判断'+that;
+		},
+        content:function(){
+        	var that = $(this);
+			var table = that.data('type');
+			var uid = that.data('uid');
+			var popFun = function(){
+				that.data('content',window[table+'kv']);
+				var cdiv = $('body > div.popover > div.popover-content');
+				$.each( that.data('content'), function(i, n){ 
+					if(i==0) cdiv.html(n + '<br/>');
+					else cdiv.append(n + '<br/>'); 
+				});
+			};
+			$.getScript("data.php?act=kv&type="+table+"&uid="+uid, popFun);
+        	return 'loading...';
+        }
+    });
 	$(window).resize(function(){
 		$('div.grid:visible').trigger("resize.slickgrid");
 	});
