@@ -21,6 +21,19 @@
 		    $k->set($type.$getID,$_POST['cond']);//建立一条字符串数据
 		}
 	}
+	if($act == "edit"){
+		$uid = $_GET['uid'];
+		$name = $_POST['name'];
+		$table = $mysql->escape($type);
+		if($table == "item"){
+			$sql = "UPDATE `item` SET name='"  . $mysql->escape( $name ) . "' WHERE ".$table. "id = " . $mysql->escape($uid);
+			$mysql->runSql( $sql );
+
+			$k=new SaeKV();
+		    $k->init();
+		    $k->set($type.$uid,$_POST['cond']);//建立一条字符串数据
+		}
+	}
 	if($act == "del"){
 		$uid = $_GET['uid'];
 		$table = $mysql->escape($type);

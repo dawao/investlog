@@ -8,7 +8,7 @@ $(function($) {
 					constr += '<span data-type="'+table.substr(1)+'" data-uid="'+dataContext[columnDef.field]+'" class="btn btn-default btn-xs glyphicon glyphicon-align-justify"></span>&nbsp;&nbsp;';
 				}
 				var sa = ['<span data-type="'+table.substr(1)+'" class="btn btn-default btn-xs glyphicon glyphicon-plus"></span>&nbsp;&nbsp;',
-					"<span class='btn btn-default btn-xs glyphicon glyphicon-edit'></span>&nbsp;&nbsp;",
+					"<span data-type='"+table.substr(1)+"' data-uid='"+dataContext[columnDef.field]+"' data-name='"+dataContext['name']+"' class='btn btn-default btn-xs glyphicon glyphicon-edit'></span>&nbsp;&nbsp;",
 					"<span data-type='"+table.substr(1)+"' data-uid='"+dataContext[columnDef.field]+"' class='btn btn-default btn-xs glyphicon glyphicon-trash'></span>",
 					constr
 				];
@@ -65,14 +65,20 @@ $(function($) {
 	};
 	$("a.navbar-brand,ul.nav > li > a").click(function () { 
 		$(".mmcc").hide();
-		var table = $(this).attr('href');
-		$(table).show();
-		fillgrid(table);
+		var tc = $(this).attr('href');
+		$(tc).show();
+		fillgrid(tc);
 	});
 	$("a.navbar-brand").click();
 	$("ul.nav > li.dropdown >ul.dropdown-menu a").click(function () { 
 		alert('#statistics');
 	});
+	var apdFun = function(){
+    	var strarr = ['<label class="col-lg-2 control-label sr-only"></label>',
+    	' <div class="col-lg-10"><input type="text" class="form-control itemcon" placeholder="条件"></div>'
+    	];
+		$("#addcongrp").append(strarr.join(''));
+    };
 	$('#itemform').one('shown.bs.modal', function () {
 	  
 	  	$("#itemsavebtn").bind("click", function(){
@@ -80,17 +86,18 @@ $(function($) {
 	  		console.log(cond);
 	  		cond = $.map( cond, function(n){ return $(n).val(); });
 			var dataParass={type:"item",name:$("#itemname").val(),owner:"testowner",cond:cond};
+			var act = $('#itemform').data('act');
+			if(act == 'edit')
+				act += "&uid="+$('#itemform').data('uid');
 	        $.ajax({
 	            type:"POST",
 	            //contentType:"application/json",
-	            url:"data.php?act=add",
+	            url:"data.php?act="+act,
 	            data:dataParass,
 	            //dataType:"json",
 	            success: function(result){
 	            	fillgrid("#item");
-	                //$.each($.parseJSON(result),function(key,value){    
-	                //    alert("key:"+key+" value:"+value);
-	                //});
+	                $('#itemform').modal('hide');
 	            },
 	            error: function(XMLHttpRequest, textStatus, errorThrown) {
                     alert(XMLHttpRequest.status);
@@ -101,17 +108,31 @@ $(function($) {
 
 	    });
 
-	    $("#addconbtn").bind("click", function(){
-	    	var strarr = ['<label class="col-lg-2 control-label sr-only"></label>',
-	    	' <div class="col-lg-10"><input type="text" class="form-control itemcon" placeholder="条件"></div>'
-	    	];
-			$("#addcongrp").append(strarr.join(''));
-
-	    });
+	    $("#addconbtn").bind("click", apdFun);
+	});
+	$('#itemform').on('shown.bs.modal', function () {
+	  	var act = $('#itemform').data('act');
+		if(act == 'edit'){
+			$("#itemname").val($('#itemform').data('name'));
+			$("#addcongrp>label:gt(0),#addcongrp>div:gt(0)").remove();
+			$("#addcongrp :text:last").val('');
+			$.getScript("data.php?act=kv&type=item&uid="+$('#itemform').data('uid'), function(){
+				$.each( window['itemkv'], function(i, n){
+					if(i != 0)	apdFun(); 
+					$("#addcongrp :text:last").val(n);
+				});
+			});
+		}
 	});
 	//添加操作
 	$('body').delegate('span.glyphicon-plus','click', function() { 
-		//alert($(this).data('table')); 
+		$('#itemform').data('act','add');
+		var table = $(this).data('type');
+		$('#'+table+'form').modal({ remote: table+"form.html"});
+	});
+	//编辑操作
+	$('body').delegate('span.glyphicon-edit','click', function() { 
+		$('#itemform').data('act','edit').data('uid',$(this).data('uid')).data('name',$(this).data('name'));
 		var table = $(this).data('type');
 		$('#'+table+'form').modal({ remote: table+"form.html"});
 	});
