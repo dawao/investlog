@@ -85,7 +85,7 @@ $(function($) {
 	  		var cond = $("#addcongrp").find('.itemcon');
 	  		console.log(cond);
 	  		cond = $.map( cond, function(n){ return $(n).val(); });
-			var dataParass={type:"item",name:$("#itemname").val(),owner:"testowner",cond:cond};
+			var dataParass={type:"item",name:$("#itemname").val(),owner:"public",cond:cond};
 			var act = $('#itemform').data('act');
 			if(act == 'edit')
 				act += "&uid="+$('#itemform').data('uid');
@@ -180,4 +180,20 @@ $(function($) {
 	$(window).resize(function(){
 		$('div.grid:visible').trigger("resize.slickgrid");
 	});
+
+	$.ajax({  
+	    dataType:'script',  
+	    url:"http://hq.sinajs.cn/list=sh601003,sh601001",  
+	    cache: true,
+	    scriptCharset: 'gbk',
+	    success: function(msg){  
+			$.each('sh601003,sh601001'.split(','),function(i, n){ 
+				var sn = 'hq_str_'+n;
+				if(sn in window) {
+					var cc = window[sn].split(',');
+					$('#statisticsgrid').append(cc[0]+'今开'+cc[1]+'昨收'+cc[2]+'最新'+cc[3]+'<br>');
+				}
+			});
+	    }  
+	}); 
 });

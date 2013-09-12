@@ -93,6 +93,9 @@
       <div class="modal fade" id="planform" tabindex="-3" role="dialog" aria-labelledby="planformLabel" aria-hidden="true"></div><!-- /.modal -->
     </div>
     <div id="statistics" class="container mmcc" style="min-height: 300px;display:none;">
+        <script type="text/javascript" charset='GBK' src="http://finance.sina.com.cn/basejs/suggestServer.js"></script>
+        <div style="position:relative;zoom:1;z-index:900;"><div style="display: none;"></div><div style="opacity: 0.95; position: absolute; width: 180px; z-index: 999; top: 6px; left: 0px; margin-top: 19px; display: none;"></div><input name="symbol" id="symbol" value="请输入股票代码" onblur="if(this.value == '') this.value='请输入股票代码';" onfocus="if(this.value == '请输入股票代码') this.value='';" class="reportinput" autocomplete="off"></div>
+        <script type="text/javascript">(new SuggestServer()).bind({"input": "symbol", "value": "@3@", "type": "stock", "width": 180});</script>
         <div id="statisticsgrid" class='grid' style="height: 310px;"></div>
     </div>
     <div class="container">
