@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>股点点</title>
+    <title>鉴股</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-    <!-- Bootstrap -->
+    <!-- Bootstrap //lib.sinaapp.com/-->
     <link href="//lib.sinaapp.com/js/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" media="screen">
     <link rel="stylesheet" href="slickgrid/slick.grid.css" type="text/css"/>
+    <style>
+      body.modal-open, .modal-open .navbar-fixed-top, .modal-open .navbar-fixed-bottom {
+      margin-right: 0px;//改成0弹出对话框body不向左动
+      }
+    </style>
     <script type="text/javascript">
 <?php
 
@@ -74,7 +79,7 @@
 
     <div class="jumbotron" style="padding-bottom: 0px;">
       <div class="container"><h2 class="text-primary">计划你的交易　交易你的计划</h2>
-      <p class="text-muted">给爱学习爱折腾的股民，方便的创建交易计划，方便跟踪、改进、统计、定制交易计划，不断积累，提高水平。</p></div>
+      <p class="text-muted">不同的人需要不同的方法，帮助爱学习爱折腾的股民，方便的创建交易计划，方便跟踪、改进、统计、定制交易计划，不断积累，提高水平。</p></div>
     </div>
 
     <div id="item" class="container mmcc" style="min-height: 300px;display:none;">
@@ -106,7 +111,7 @@
         </div>
         <div class="col-lg-4">
           <h3 class="text-info">分享</h3>
-          <p class="text-muted">与好友共同成长</p>
+          <p class="text-muted">成就发微博与好友共同成长</p>
        </div>
         <div class="col-lg-4">
           <h3 class="text-info">技术</h3>
@@ -116,17 +121,18 @@
       <footer>
         <p>&copy; Company 2013</p>
       </footer>
-    </div> <!-- /container -->
-
+    </div> <!-- /container 
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>-->
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script type="text/javascript" src="//lib.sinaapp.com/js/jquery/2.0.3/jquery-2.0.3.min.js"></script>
     <script type="text/javascript" src="slickgrid/lib/jquery.event.drag-2.2.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <!-- Include all compiled plugins (below),  //lib.sinaapp.com/-->
     <script type="text/javascript" src="//lib.sinaapp.com/js/bootstrap/3.0.0/js/bootstrap.min.js"></script>
     <!-- slickgrid -->
     <script type="text/javascript" src="slickgrid/slick.core.js"></script>
     <script type="text/javascript" src="slickgrid/slick.grid.js"></script>
     <script type="text/javascript" src="slickgrid/plugins/slick.rowselectionmodel.js"></script>
+    <script type="text/javascript" src="slickgrid/plugins/slick.checkboxselectcolumn.js"></script>
     <!-- bootstrap helper -->
     <script type="text/javascript" src="js/bootstrap-slickgrid.js"></script>
     <script type="text/javascript" src="js/main.js"></script>

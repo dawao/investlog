@@ -30,7 +30,7 @@ $(function($) {
 				    {id: "title", name: "股票代码", field: "stockid", width: 100},
 				    {id: "stock", name: "股票名称", field: "stockname", width: 100},
 				    {id: "owner", name: "创建人", field: "owner", width: 100},
-				    {id: "owner", name: "策略", field: "proid", width: 200},
+				    {id: "procid", name: "策略", field: "procid", width: 200},
 				    {id: "start", name: "创建日期", field: "mdtime", width: 100},
 				    {id: "actions", name: "操作", field: table.substr(1)+"id", width: 300, formatter: DummyLinkFormatter}
 				  ];
@@ -79,6 +79,7 @@ $(function($) {
     	];
 		$("#addcongrp").append(strarr.join(''));
     };
+    //对话框加事件
 	$('#itemform').one('shown.bs.modal', function () {
 	  
 	  	$("#itemsavebtn").bind("click", function(){
@@ -124,16 +125,127 @@ $(function($) {
 			});
 		}
 	});
+
+	$('#procform').one('shown.bs.modal', function () {
+	  
+	  	$("#procsavebtn").bind("click", function(){
+	  		var gridObj = $('#procitemGrid').data('slickgrid');
+	  		var cond = gridObj.grid.getSelectedRows();//$("#addcongrpp").find('.proccon');
+	  		console.log(cond);
+	  		cond = $.map( cond, function(n){ return gridObj.wrapperOptions.data[n].itemid; });
+			var dataParass={type:"proc",name:$("#procname").val(),owner:"public",cond:cond};
+			var act = $('#procform').data('act');
+			if(act == 'edit')
+				act += "&uid="+$('#procform').data('uid');
+	        $.ajax({
+	            type:"POST",
+	            //contentType:"application/json",
+	            url:"data.php?act="+act,
+	            data:dataParass,
+	            //dataType:"json",
+	            success: function(result){
+	            	fillgrid("#proc");
+	                $('#procform').modal('hide');
+	            },
+	            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert(XMLHttpRequest.status);
+                    alert(XMLHttpRequest.readyState);
+                    alert(textStatus);
+	            }
+	        });
+
+	    });
+	});
+	$('#procform').on('shown.bs.modal', function () {
+		$("#procname").val($('#procform').data('name'));
+		$.getScript("data.php?act=query&type=item", function () {
+			var gridObj = $('#procitemGrid').data('slickgrid');
+			if(gridObj){
+				gridObj.wrapperOptions.data=window["itemrows"];
+				gridObj.grid.setData(window["itemrows"]);
+				gridObj.grid.render();
+				//$(table+'grid').slickgrid("postInit");
+			}else{//创建表格显示所有的可选择项目
+				var columns = [];
+				var checkboxSelector = new Slick.CheckboxSelectColumn({});
+				columns.push(checkboxSelector.getColumnDefinition());
+			    columns.push({
+				        id: 'piname',
+				        name: 'pn',
+				        field: 'name',
+				        width: 100
+				    });
+				$('#procitemGrid').slickgrid({
+				    columns: columns,
+				    data: window["itemrows"],
+				    slickGridOptions: {
+						enableColumnReorder:false,
+					    enableCellNavigation: true,
+					    asyncEditorLoading: false,
+					    forceFitColumns: true,
+						rowHeight: 35,
+					    autoEdit: false
+				    }
+				});
+			    $("#procitemGrid>div.slick-header").height(0);
+			    gridObj = $('#procitemGrid').data('slickgrid');
+				gridObj.grid.resizeCanvas();
+				gridObj.grid.setSelectionModel(new Slick.RowSelectionModel({selectActiveRow: false}));
+				gridObj.grid.registerPlugin(checkboxSelector);
+			}
+			var act = $('#procform').data('act');
+			if(act == 'edit'){
+				//$("#addcongrpp>label:gt(0),#addcongrpp>div:gt(0)").remove();
+				//$("#addcongrpp :text:last").val('');
+				//勾选表格行
+				$.getScript("data.php?act=kv&type=proc&uid="+$('#procform').data('uid'), function(){
+					var cond = window['prockv'];
+					if(cond){
+						var arr = $.map( gridObj.wrapperOptions.data, function(n){ return n.itemid; });
+			  			cond = $.map( cond, function(n){ return $.inArray(n,arr); });
+					}else{
+						cond =[];
+					}
+					gridObj = $('#procitemGrid').data('slickgrid');
+					gridObj.grid.setSelectedRows(cond);
+				});
+			}
+		});
+	});
+
+	$('#planform').one('shown.bs.modal', function () {
+	  	$("#plansave").click(function(){
+			var options = {
+				url: "data.php?act=add",  // override for form's 'action' attribute 
+				type: 'post', 
+	            data: "type=plan&owner=public&"+$('#plansubmit').serialize(),
+	            success: function(result){
+	            	fillgrid("#plan");
+	                $('#planform').modal('hide');
+	            },
+	            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert(XMLHttpRequest.status);
+                    alert(XMLHttpRequest.readyState);
+                    alert(textStatus);
+	            }	 
+	        };
+			$.ajax(options);
+            return false;
+	    });
+	});
+	$('#procform').on('hidden.bs.modal', function () {
+		$("#procname").val('');
+	});	
 	//添加操作
 	$('body').delegate('span.glyphicon-plus','click', function() { 
-		$('#itemform').data('act','add');
 		var table = $(this).data('type');
+		$('#'+table+'form').data('act','add').data('name','');
 		$('#'+table+'form').modal({ remote: table+"form.html"});
 	});
 	//编辑操作
-	$('body').delegate('span.glyphicon-edit','click', function() { 
-		$('#itemform').data('act','edit').data('uid',$(this).data('uid')).data('name',$(this).data('name'));
+	$('body').delegate('span.glyphicon-edit','click', function() {
 		var table = $(this).data('type');
+		$('#'+table+'form').data('act','edit').data('uid',$(this).data('uid')).data('name',$(this).data('name'));
 		$('#'+table+'form').modal({ remote: table+"form.html"});
 	});
 	//删除操作
