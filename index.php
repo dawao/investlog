@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>鉴股</title>
+    <title>见股</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
     <!-- Bootstrap //lib.sinaapp.com/-->
@@ -79,7 +79,7 @@
 
     <div class="jumbotron" style="padding-bottom: 0px;">
       <div class="container"><h2 class="text-primary">计划你的交易　交易你的计划</h2>
-      <p class="text-muted">不同的人需要不同的方法，帮助爱学习爱折腾的股民，方便的创建交易计划，方便跟踪、改进、统计、定制交易计划，不断积累，提高水平。</p></div>
+      <p class="text-muted">不同的人需要不同的方法，帮助爱学习爱折腾的股民，方便的创建交易计划，方便跟踪、改进、统计、定制交易计划，提示风险，不断积累，提高水平。</p></div>
     </div>
 
     <div id="item" class="container mmcc" style="min-height: 300px;display:none;">
@@ -98,9 +98,9 @@
       <div class="modal fade" id="planform" tabindex="-3" role="dialog" aria-labelledby="planformLabel" aria-hidden="true"></div><!-- /.modal -->
     </div>
     <div id="statistics" class="container mmcc" style="min-height: 300px;display:none;">
-        <script type="text/javascript" charset='GBK' src="http://finance.sina.com.cn/basejs/suggestServer.js"></script>
-        <div style="position:relative;zoom:1;z-index:900;"><div style="display: none;"></div><div style="opacity: 0.95; position: absolute; width: 180px; z-index: 999; top: 6px; left: 0px; margin-top: 19px; display: none;"></div><input name="symbol" id="symbol" value="请输入股票代码" onblur="if(this.value == '') this.value='请输入股票代码';" onfocus="if(this.value == '请输入股票代码') this.value='';" class="reportinput" autocomplete="off"></div>
-        <script type="text/javascript">(new SuggestServer()).bind({"input": "symbol", "value": "@3@", "type": "stock", "width": 180});</script>
+        
+        
+        <script type="text/javascript"></script>
         <div id="statisticsgrid" class='grid' style="height: 310px;"></div>
     </div>
     <div class="container">
@@ -136,5 +136,9 @@
     <!-- bootstrap helper -->
     <script type="text/javascript" src="js/bootstrap-slickgrid.js"></script>
     <script type="text/javascript" src="js/main.js"></script>
+    <script type="text/javascript" charset='GBK' src="http://finance.sina.com.cn/basejs/suggestServer.js"></script>
+
+    <link href="js/select/select.css" rel="stylesheet"/>
+    <script src="js/select/select.js"></script>
   </body>
 </html>

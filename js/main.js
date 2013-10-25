@@ -43,7 +43,6 @@ $(function($) {
 					gridObj.wrapperOptions.data=window[table.substr(1)+"rows"];
 					gridObj.grid.setData(window[table.substr(1)+"rows"]);
 					gridObj.grid.render();
-					//$(table+'grid').slickgrid("postInit");
 				}else
 					$(table+'grid').slickgrid({
 					    columns: columns,
@@ -164,7 +163,6 @@ $(function($) {
 				gridObj.wrapperOptions.data=window["itemrows"];
 				gridObj.grid.setData(window["itemrows"]);
 				gridObj.grid.render();
-				//$(table+'grid').slickgrid("postInit");
 			}else{//创建表格显示所有的可选择项目
 				var columns = [];
 				var checkboxSelector = new Slick.CheckboxSelectColumn({});
@@ -232,6 +230,27 @@ $(function($) {
 			$.ajax(options);
             return false;
 	    });
+	    var suggestServer = new SuggestServer();
+	    suggestServer.bind({"input": "symbol", "value": "@3@", "type": "stock", "width": 180,"callback":
+	 		function (code,arr) {
+	 			var first = arr, sc = code ;
+	 			if(arr.length == 0){
+	 				var first = this._objectData['key_'+code].split(';').shift().split(',');
+	 				sc =  first[3];
+	 			}
+	 			$("#stockcode,#symbol").val(sc);
+	 			$("#stockname").val(first?first[4]:'');
+	 		}
+		});
+		$.getScript("data.php?act=query&type=proc", function () {
+			var data = window["procrows"];
+			var select = $("#procid").hide();
+			$.each( data, function(i, n){ 
+				select.append('<option value="'+n.procid+'">'+n.name+'</option>'); 
+			});
+	        select.show().selectpicker();
+		});
+		$("#remark").selectpicker();
 	});
 	$('#procform').on('hidden.bs.modal', function () {
 		$("#procname").val('');

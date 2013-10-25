@@ -7,14 +7,22 @@
     <form id="plansubmit" role="form">
     <div class="modal-body">
       <div class="form-group">
-        <input name="name" type="text" placeholder="股票" class="form-control">
-        <input name="stockcode" type="hidden" value="600">
+        <div style="position:relative;zoom:1;z-index:900;"><div style="display: none;"></div><div style="opacity: 0.95; position: absolute; width: 180px; z-index: 999; top: 6px; left: 0px; margin-top: 19px; display: none;"></div><input name="symbol" id="symbol" value="请输入股票代码" onblur="if(this.value == '') this.value='请输入股票代码';" onfocus="if(this.value == '请输入股票代码') this.value='';" class="reportinput" autocomplete="on"></div>
+        <input id="stockname" name="name" type="hidden" value="">
+        <input id="stockcode" name="stockcode" type="hidden" value="">
       </div>
       <div class="form-group">
-        <input name="procid" type="text" placeholder="策略" class="form-control">
+        <select id="procid" name="procid" data-live-search="true" class="form-control">
+          <option value="-1">请选择策略</option>
+        </select>
       </div>
       <div class="form-group">
-        <input name="remark"  type="text" placeholder="备注" class="form-control">
+        <select id="remark"  name="remark" class="form-control" title="选择风险提示项-可选多项" multiple >
+            <option value="1">大盘转坏</option>
+            <option value="2">跌破重要均线</option>
+            <option value="3">暴跌不补仓</option>
+            <option value="4">及时放飞盈利</option>
+        </select>
       </div>
     </div>
     <div class="modal-footer">
