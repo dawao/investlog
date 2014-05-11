@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>见股</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <!-- Bootstrap //lib.sinaapp.com/-->
+    <link href="http://lib.sinaapp.com/js/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link rel="stylesheet" href="slickgrid/slick.grid.css" type="text/css"/>
+    <style>
+      body.modal-open, .modal-open .navbar-fixed-top, .modal-open .navbar-fixed-bottom {
+      margin-right: 0px;//改成0弹出对话框body不向左动
+      }
+      @media (min-width: 992px) {
+          .modal-lg {
+              width:900px
+          }
+      }
+    </style>
+    <script type="text/javascript">
+
+	  </script>
+  </head>
+  <body>
+      <div class="container navbar navbar-inverse">
+        <div class="row">
+          <div class=" col-xs-2 col-sm-2 navbar-btn" >
+              <button id="home" type="submit" class="btn btn-primary">首页</button>
+          </div>
+          <div class=" col-xs-2 col-sm-2" ></div>
+          <div class=" col-xs-6 col-sm-6 navbar-btn" >
+            <input id="symbol" type="text" placeholder="输入股票回车添加" class="form-control">
+          </div>
+          <div class="dropdown col-xs-2 col-sm-2 navbar-btn " >
+              <a href="#" id="drop3" role="button" class="btn btn-default navbar-right dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon glyphicon-th-list"></span> <b class="caret"></b></a>
+              <ul class="dropdown-menu" role="menu" aria-labelledby="drop3">
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="http://twitter.com/fat">成功</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="http://twitter.com/fat">失败</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="http://twitter.com/fat">待定</a></li>
+                <li role="presentation" class="divider"></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="http://twitter.com/fat">关于</a></li>
+              </ul>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div id="stocklist" class="container">
+          <div id="demostock" style="min-height: 300px;height: 100%;">
+            <div class="col-md-3 col-xs-3 label label-default"></div>
+            <div class="col-md-3 col-xs-3 label label-default"></div>
+            <div class="col-md-3 col-xs-3 label label-default"></div>
+            <div class="col-md-3 col-xs-3 label label-default"></div>
+          </div>
+
+      </div>
+      <div id="alldetaildialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog" style="width: 90%;">
+          <div class="modal-content">
+
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+              <h4 class="modal-title" id="myLargeModalLabel">编辑</h4>
+            </div>
+              <div id="alldetail" class="modal-body container" style="min-height: 300px;">
+                  <div class="row">
+                    <div id="ideagrid" class="col-md-3 col-xs-3" style="min-height: 300px;padding: 0px;"></div>
+                    <div id="buysgrid" class="col-md-3 col-xs-3" style="min-height: 300px;padding: 0px;"></div>
+                    <div id="sellgrid" class="col-md-3 col-xs-3" style="min-height: 300px;padding: 0px;"></div>
+                    <div id="riskgrid" class="col-md-3 col-xs-3" style="min-height: 300px;padding: 0px;"></div>
+                  </div>
+
+              </div>
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+      </div>
+
+      <div id="onedetail" class="container" style="min-height: 300px;display:none;">
+          <!-- Nav tabs -->
+        <ul class="nav nav-tabs">
+          <li class="active"><a href="#stock" data-toggle="tab">趋势</a></li>
+          <li><a href="#idea" data-toggle="tab">选股依据</a></li>
+          <li><a href="#buys" data-toggle="tab">把握买点</a></li>
+          <li><a href="#sell" data-toggle="tab">把握卖点</a></li>
+          <li><a href="#risk" data-toggle="tab">风险控制</a></li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+          <div class="tab-pane fade in active" id="stock">.K.</div>
+          <div class="tab-pane list-group fade" id="idea"></div>
+          <div class="tab-pane list-group fade" id="buys"></div>
+          <div class="tab-pane list-group fade" id="sell">
+            <nav id="btngroup" class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+              <div class="container">
+
+                <div class="btn-group btn-group-justified">
+                  <a id="conbtn" class="btn btn-default" role="button">编辑</a>
+                  <a id="combtn" class="btn btn-default" role="button">备注</a>
+                  <a id="tagbtn" class="btn btn-default" role="button">标签</a>
+                </div>
+              </div>
+            </nav>
+
+          </div>
+          <div class="tab-pane list-group fade" id="risk"></div>
+        </div>
+      </div>
+
+      <div id="editdialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+              <h4 class="modal-title" id="editModalLabel">编辑</h4>
+            </div>
+            <div class="modal-body container">
+              <div id="twolist" class="row">
+                  <div id="comlist" class="list-group col-md-9">  
+                    <div class="input-group">
+                      <!-- input type="text" class="form-control"-->
+                      <span class="input-group-btn">
+                        <button class="btn btn-default" type="button">写下对于此股的相法</button>
+                      </span>
+                    </div><!-- /input-group -->
+                    <div id="comgrid"  style="min-height: 300px;padding: 0px"></div>
+                  </div>
+                  <div id="taglist" class="list-group col-md-3"> 
+                    <div class="input-group">
+                      <!-- input type="text" class="form-control"-->
+                      <span class="input-group-btn">
+                        <button class="btn btn-default" type="button">选择分类标签</button>
+                      </span>
+                    </div><!-- /input-group -->
+                    <div id="tagsgrid"  style="min-height: 300px;padding: 0px"></div>
+                  </div>
+              </div>
+            </div>
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+      </div>
+
+      <footer class="container">
+        <p class="bg-info">浏览器，手机，桌面都可以 &copy; Company 2013</p>
+      </footer>
+    <!-- /container 
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>-->
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script type="text/javascript" src="http://lib.sinaapp.com/js/jquery/2.0.3/jquery-2.0.3.min.js"></script>
+    <script type="text/javascript" src="slickgrid/lib/jquery.event.drag-2.2.js"></script>
+    <!-- Include all compiled plugins (below),  //lib.sinaapp.com/-->
+    <script type="text/javascript" src="http://lib.sinaapp.com/js/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+    <!-- slickgrid -->
+    <script type="text/javascript" src="slickgrid/slick.core.js"></script>
+    <script type="text/javascript" src="slickgrid/slick.grid.js"></script>
+    <script type="text/javascript" src="slickgrid/slick.editors.js"></script>
+    <script type="text/javascript" src="slickgrid/plugins/slick.rowselectionmodel.js"></script>
+    <script type="text/javascript" src="slickgrid/plugins/slick.checkboxselectcolumn.js"></script>
+    <!-- bootstrap helper -->
+    <script type="text/javascript" src="js/bootstrap-slickgrid.js"></script>
+    <script type="text/javascript" src="js/fun.js"></script>
+    <script type="text/javascript" charset='GBK' src="http://finance.sina.com.cn/basejs/suggestServer.js"></script>
+
+  </body>
+</html>
