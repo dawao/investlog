@@ -4,7 +4,7 @@ var user = "public",
 	publicBuys=[{name:'突破'},{name:'消息'}],
 	publicSell=[{name:'达标'},{name:'条件反转'}],
 	publicRisk=[{name:'整体仓位'},{name:'趋势'}],
-	publicTag=[{name:'成功'},{name:'失败'},{name:'待定'},{name:'研究'}];
+	publicTag=[{name:'成功'},{name:'失败'},{name:'待定'},{name:'经典'}];
 function getud() {return $.parseJSON(localStorage.getItem(user));}
 var userdata = getud();
 function setud() {localStorage.setItem(user,JSON.stringify(userdata));};
@@ -14,9 +14,7 @@ if(!userdata){
 		idea:publicIdea,
 		buys:publicBuys,
 		sell:publicSell,
-		risk:publicRisk,
-		com:[],
-		tag:[]
+		risk:publicRisk
 	};
 }
 var stockList = {
@@ -238,6 +236,12 @@ var editDialog = {
 	init:function() {
 		$('#editdialog').one('shown.bs.modal', editDialog.createGrid);
 		$('#editdialog').on('shown.bs.modal', editDialog.fillGrid);
+		$('#editdialog').on('hide.bs.modal', function() {
+			var data = $.parseJSON(localStorage.getItem(user+$('#myLargeModalLabel').data('sid')))||{};
+			data.com = $('#comgrid').data('slickgrid').grid.getData();
+			data.tag = $('#tagsgrid').data('slickgrid').grid.getSelectedRows();
+			localStorage.setItem(user+$('#myLargeModalLabel').data('sid'),JSON.stringify(data))
+		});
 	},
 	createGrid:function() {
 		var gridoptions = {
@@ -267,11 +271,14 @@ var editDialog = {
 		    columns: [{id: "com", name: "", field: "name", width: 200, formatter: RowFormatter, editor: Slick.Editors.Text}],
 		    data: [],slickGridOptions: $.extend(gridoptions,{editable: true})
 		}).data('slickgrid').grid;
-		grid.onClick.subscribe(function(e,obj){
-			console.log(obj);
+		grid.onClick.subscribe(function(e,args){
 			var $elm = $(e.target);
 			if ($elm.hasClass('badge')) {
-
+				var grid = args.grid,data = grid.getData();
+		    	grid.invalidateRow(data.length);
+		    	data.splice(args.row,1);
+		    	grid.updateRowCount();
+		     	grid.render();
 			}
 		});
 		grid.onAddNewRow.subscribe(function (e, args) {
@@ -282,21 +289,23 @@ var editDialog = {
 		      grid.render();
 	    });
 		$('#comgrid>div.slick-header').hide();
-		$('#tagsgrid').slickgrid({
+		grid = $('#tagsgrid').slickgrid({
 		    columns: [checkboxSelector.getColumnDefinition(),
 		    	{id: "tags", name: "", field: "name", width: 200}],
 		    data: publicTag,slickGridOptions: gridoptions
-		});
+		}).data('slickgrid').grid;
 		$('#tagsgrid>div.slick-header').hide();
-		$('#tagsgrid').data('slickgrid').grid.registerPlugin(checkboxSelector);
+		grid.setSelectionModel(new Slick.RowSelectionModel({selectActiveRow: false}));
+		grid.registerPlugin(checkboxSelector);
 	},
 	fillGrid:function() {
 		var gridObj = $('#comgrid').data('slickgrid');
-		var data = userdata.com;
-		if(gridObj){
-			gridObj.wrapperOptions.data=data;
-			gridObj.grid.setData(data);
+		var data = $.parseJSON(localStorage.getItem(user+$('#myLargeModalLabel').data('sid')))||{};
+		if(gridObj && data){
+			gridObj.wrapperOptions.data=data.com||[];
+			gridObj.grid.setData(data.com||[]);
 			gridObj.grid.render();
+			$('#tagsgrid').data('slickgrid').grid.setSelectedRows(data.tag||[]);
 		}
 	}
 };
