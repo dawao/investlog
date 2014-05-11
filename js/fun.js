@@ -52,31 +52,30 @@ var stockList = {
 		});
 		var gridObj = $('#demostock').data('slickgrid');
 		if(gridObj){
-				console.log(gridObj.grid.getViewport());
-				console.log(gridObj.grid.getRenderedRange());
-		
+				//console.log(gridObj.grid.getViewport());
+				//console.log(gridObj.grid.getRenderedRange());
 			gridObj.grid.onClick.subscribe(function(e,obj){
 				console.log(obj);
-				
+				var rowobj = obj.grid.getData()[obj.row];
+				var headstring = "<span class='badge' data-toggle='modal' data-target='#editdialog'>备注和标签</span>";
+				$('#myLargeModalLabel').html(rowobj.name+headstring).data('sid',rowobj.code);
 				if($(window).width()>=992){
 					if(e.target.tagName == 'SPAN'){//click name display kline
 						console.log('kline');
 					}else{
 						$('#alldetaildialog').modal('show')
-						var rowobj = gridObj.wrapperOptions.data[obj.row];
-						var headstring = "<span class='badge' data-toggle='modal' data-target='#editdialog'>备注和标签</span>";
-						$('#myLargeModalLabel').html(rowobj.name+headstring).data('sid',rowobj.code);
 					}
 				}else{
 					$("#stocklist").hide();
 					$("#onedetail").show();
-					detailList.createGrid();
+					if (!$('#ideagrid').data('slickgrid'))
+						detailList.createGrid();
 					detailList.fillGrid();
 				}			
 			});
-			gridObj.grid.onViewportChanged.subscribe(function(e,obj){
+			// gridObj.grid.onViewportChanged.subscribe(function(e,obj){
 
-			});
+			// });
 		}
 	},
 	fillGrid:function() {
@@ -299,13 +298,13 @@ var editDialog = {
 		grid.registerPlugin(checkboxSelector);
 	},
 	fillGrid:function() {
-		var gridObj = $('#comgrid').data('slickgrid');
+		var gridObj = $('#comgrid').trigger("resize.slickgrid").data('slickgrid');
 		var data = $.parseJSON(localStorage.getItem(user+$('#myLargeModalLabel').data('sid')))||{};
 		if(gridObj && data){
 			gridObj.wrapperOptions.data=data.com||[];
 			gridObj.grid.setData(data.com||[]);
 			gridObj.grid.render();
-			$('#tagsgrid').data('slickgrid').grid.setSelectedRows(data.tag||[]);
+			$('#tagsgrid').trigger("resize.slickgrid").data('slickgrid').grid.setSelectedRows(data.tag||[]);
 		}
 	}
 };
@@ -420,7 +419,7 @@ $(function($) {
 	function initbtn(bid) {
 		$(bid+'btn').click(function() {
 			$('#editdialog').modal('show');
-			$.each(["#con","#com","#tag"],function(i, n){
+			$.each(["#com","#tag"],function(i, n){
 				if(bid == n)
 					$(n+'list').show();
 				else
@@ -428,7 +427,7 @@ $(function($) {
 			});
 		});
 	}
-	$.each(["#con","#com","#tag"],function(i, n){ 
+	$.each(["#com","#tag"],function(i, n){ 
 		initbtn(n);
 	});
 	//$('#editdialog').on('hidden.bs.modal', function (e) {
