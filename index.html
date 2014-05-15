@@ -79,7 +79,7 @@
       <div id="onedetail" class="container" style="min-height: 300px;display:none;">
           <!-- Nav tabs -->
         <ul class="nav nav-tabs">
-          <li class="active"><a href="#stock" data-toggle="tab">趋势</a></li>
+          <li class="active"><a href="#stock" data-toggle="tab">走势</a></li>
           <li><a href="#idea" data-toggle="tab">选股依据</a></li>
           <li><a href="#buys" data-toggle="tab">把握买点</a></li>
           <li><a href="#sell" data-toggle="tab">把握卖点</a></li>
@@ -96,6 +96,7 @@
               <div class="container">
 
                 <div class="btn-group btn-group-justified">
+                  <a id="conbtn" class="btn btn-default" role="button">分享</a>
                   <a id="combtn" class="btn btn-default" role="button">备注</a>
                   <a id="tagbtn" class="btn btn-default" role="button">标签</a>
                 </div>
@@ -121,7 +122,7 @@
                     <div class="input-group">
                       <!-- input type="text" class="form-control"-->
                       <span class="input-group-btn">
-                        <button class="btn btn-default" type="button">写下对于此股的相法</button>
+                        <button class="btn btn-default" type="button">记下对于此股的想法</button>
                       </span>
                     </div><!-- /input-group -->
                     <div id="comgrid"  style="min-height: 300px;padding: 0px"></div>
@@ -148,19 +149,10 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>-->
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script type="text/javascript" src="http://lib.sinaapp.com/js/jquery/2.0.3/jquery-2.0.3.min.js"></script>
-    <script type="text/javascript" src="slickgrid/lib/jquery.event.drag-2.2.js"></script>
+   
     <!-- Include all compiled plugins (below),  //lib.sinaapp.com/-->
     <script type="text/javascript" src="http://lib.sinaapp.com/js/bootstrap/3.0.0/js/bootstrap.min.js"></script>
-    <!-- slickgrid -->
-    <script type="text/javascript" src="slickgrid/slick.core.js"></script>
-    <script type="text/javascript" src="slickgrid/slick.grid.js"></script>
-    <script type="text/javascript" src="slickgrid/slick.editors.js"></script>
-    <script type="text/javascript" src="slickgrid/plugins/slick.rowselectionmodel.js"></script>
-    <script type="text/javascript" src="slickgrid/plugins/slick.checkboxselectcolumn.js"></script>
-    <!-- bootstrap helper -->
-    <script type="text/javascript" src="js/bootstrap-slickgrid.js"></script>
-    <script type="text/javascript" src="js/fun.js"></script>
     <script type="text/javascript" charset='GBK' src="http://finance.sina.com.cn/basejs/suggestServer.js"></script>
-
+    <script type="text/javascript" src="js/investlog.min.js"></script>
   </body>
 </html>

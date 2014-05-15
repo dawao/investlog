@@ -20,15 +20,25 @@ if(!userdata){
 var stockList = {
 	createGrid:function() {
 		function RowFormatter(row, cell, value, columnDef, dataContext) {
-				if(cell == 1) return '<span class="label label-info">'+(value||'')+'</span>';
-			    return row + 1;
+				if(columnDef.field == "name") 
+					return '<span class="label label-default">'+(value||'')+'</span>';
+				if(columnDef.id == "op") 
+					return '<span class="label alert-info">走势</span>&nbsp;'+
+							'<span class="label alert-warning">分享</span>&nbsp;'+
+							'<span class="label alert-danger">删除</span>';
+				if(columnDef.field.indexOf("chenge") != -1 )
+					return '<span class="alert-'+
+							(((value+'').indexOf("-") == -1 )?'danger':'success')+
+							'">'+(value||'')+'</span>';
+			    return (columnDef.id == "number")?(row + 1):value;
 		}
 		var columns = [
 		    {id: "number", name: "序号", field: "code", width: 60, formatter: RowFormatter,headerCssClass:"alert alert-info"},
 		    {id: "name", name: "名称", field: "name", width: 100, formatter: RowFormatter,headerCssClass:"alert alert-info"},
 		    {id: "price", name: "最新价", field: "price", width: 80,headerCssClass:"alert alert-info"},
-		    {id: "chengeper", name: "涨跌幅", field: "chengeper", width: 80,headerCssClass:"alert alert-info"},
-		    {id: "chenge", name: "涨跌", field: "chenge", width: 80,headerCssClass:"alert alert-info"}
+		    {id: "chengeper", name: "涨跌幅", field: "chengeper", width: 80, formatter: RowFormatter,headerCssClass:"alert alert-info"},
+		    {id: "chenge", name: "涨跌", field: "chenge", width: 80, formatter: RowFormatter,headerCssClass:"alert alert-info"},
+		    {id: "op", name: "操作", field: "code", width: 150, formatter: RowFormatter,headerCssClass:"alert alert-info"}
 		];
 		var data = [];
 		$.each(userdata.stocklist.split(','),function(i, n){ 
@@ -36,7 +46,7 @@ var stockList = {
 		});
 		$("#stocklist").height($(window).height()-105);
 		$('#demostock').slickgrid({
-		    columns: columns,
+		    columns: ($('#demostock').width() > 768)?columns:columns.slice(1, 5),
 		    data: data,
 		    slickGridOptions: {
 		      enableCellNavigation: true,
@@ -60,8 +70,9 @@ var stockList = {
 				var headstring = "<span class='badge' data-toggle='modal' data-target='#editdialog'>备注和标签</span>";
 				$('#myLargeModalLabel').html(rowobj.name+headstring).data('sid',rowobj.code);
 				if($(window).width()>=992){
-					if(e.target.tagName == 'SPAN'){//click name display kline
+					if(obj.cell == 5 && e.target.tagName == 'SPAN'){//click name display kline
 						console.log('kline');
+						alert("coming soon!!")
 					}else{
 						$('#alldetaildialog').modal('show')
 					}
@@ -239,7 +250,8 @@ var editDialog = {
 			var data = $.parseJSON(localStorage.getItem(user+$('#myLargeModalLabel').data('sid')))||{};
 			data.com = $('#comgrid').data('slickgrid').grid.getData();
 			data.tag = $('#tagsgrid').data('slickgrid').grid.getSelectedRows();
-			localStorage.setItem(user+$('#myLargeModalLabel').data('sid'),JSON.stringify(data))
+			localStorage.setItem(user+$('#myLargeModalLabel').data('sid'),JSON.stringify(data));
+			//TODO 再存一个tag的stocklist
 		});
 	},
 	createGrid:function() {
