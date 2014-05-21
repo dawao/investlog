@@ -16,7 +16,7 @@ module.exports = function (grunt) {
                 src: ["slickgrid/lib/jquery.event.drag-2.2.js",
                 'slickgrid/*.js', 
                 'slickgrid/plugins/*.js', '!slickgrid/slick.dataview.js',
-                'js/bootstrap-slickgrid.js','js/fun.js'],
+                'js/bootstrap-slickgrid.js'],//,'js/fun.js'
                 dest: 'js/<%= pkg.name %>.min.js'
               }
         }

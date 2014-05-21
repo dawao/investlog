@@ -1,9 +1,9 @@
 var user = "public", 
 	publicList="sz000538,sh600000",
-	publicIdea=[{name:'业绩好'},{name:'题材好'},{name:'主力关注'},{name:'趋势向好'}],
-	publicBuys=[{name:'突破'},{name:'消息'}],
-	publicSell=[{name:'达标'},{name:'条件反转'}],
-	publicRisk=[{name:'整体仓位'},{name:'趋势'}],
+	publicIdea=[{name:'业绩最近季度显著增长'},{name:'业绩连年稳定增长'},{name:'题材好且有板块效应'},{name:'有主力资金参与'},{name:'处于板块龙头地位'},{name:'有优质机构最近季度增仓'}],
+	publicBuys=[{name:'带量突破盘整区'},{name:'股价创新高'},{name:'形态无缺陷'},{name:'价量关系合理'}],
+	publicSell=[{name:'涨25%考虑止赢'},{name:'跌5%减半仓'},{name:'跌8%考虑止损'},{name:'跌破最近大阳线考虑卖出'}],
+	publicRisk=[{name:'趋势为王-不在弱市买入'},{name:'平盘震荡方向不明不加仓'},{name:'非明确上升趋势下仓位不超50%'},{name:'持仓不超过五只股'},{name:'方向不明可放飞利润'}],
 	publicTag=[{name:'成功'},{name:'失败'},{name:'待定'},{name:'经典'}];
 function getud() {return $.parseJSON(localStorage.getItem(user));}
 var userdata = getud();
@@ -14,7 +14,8 @@ if(!userdata){
 		idea:publicIdea,
 		buys:publicBuys,
 		sell:publicSell,
-		risk:publicRisk
+		risk:publicRisk,
+		ver:1
 	};
 }
 var stockList = {
@@ -67,8 +68,7 @@ var stockList = {
 			gridObj.grid.onClick.subscribe(function(e,obj){
 				console.log(obj);
 				var rowobj = obj.grid.getData()[obj.row];
-				var headstring = "<span class='badge' data-toggle='modal' data-target='#editdialog'>备注和标签</span>";
-				$('#myLargeModalLabel').html(rowobj.name+headstring).data('sid',rowobj.code);
+				$('#myLargeModalLabel').html(rowobj.name).data('sid',rowobj.code);
 				if($(window).width()>=992){
 					if(obj.cell == 5 && e.target.tagName == 'SPAN'){//click name display kline
 						console.log('kline');
@@ -146,6 +146,40 @@ var detailList = {
 	init:function() {
 		$('#alldetaildialog').one('shown.bs.modal', detailList.createGrid);
 		$('#alldetaildialog').on('shown.bs.modal', detailList.fillGrid);
+		$('#setv').click(function() {
+			if ($(this).text().indexOf("编辑") != -1) {
+				$(this).text($(this).text().replace("编辑","保存"));//.replace("保存","编辑");
+				$.each(["#idea","#buys","#sell","#risk"],function(i, n){
+					var gridObj = $(n+'grid').data('slickgrid');
+					if(gridObj){
+						gridObj.grid.setOptions({autoEdit: true,editable:true});
+					}
+				});
+			}else{
+				$(this).text($(this).text().replace("保存","编辑"));
+				var temp = {ver:userdata.ver},change=false;
+				$.each(["#idea","#buys","#sell","#risk"],function(i, n){
+					var gridObj = $(n+'grid').data('slickgrid');
+					if(gridObj){
+						//gridObj.grid.getEditorLock().commitCurrentEdit();
+						gridObj.grid.setOptions({autoEdit: false,editable:false});
+						temp[n.substr(1)] = gridObj.grid.getData();
+						if( JSON.stringify(userdata[n.substr(1)]) !=  JSON.stringify(temp[n.substr(1)]))
+							change = true;
+					}
+				});
+				if(change){
+					var old  = $.extend({},userdata);
+					delete(old.stocklist);
+					localStorage.setItem(user+temp.ver,JSON.stringify(old));
+					temp.ver = userdata.ver + 1;
+					$.extend(userdata,temp);
+					setud();
+				}
+
+			}
+
+		});
 	},
 	createGrid:function() {
 		var gridoptions = {
@@ -160,20 +194,23 @@ var detailList = {
 		    };
 
 		var headstring = "<span class='badge' style='float:right;'>编辑</span>";
-		var dgs = [ {id: "idea", name: "选股依据"+headstring},
-					{id: "buys", name: "把握买点"+headstring},
-					{id: "sell", name: "把握卖点"+headstring},
-					{id: "risk", name: "风险控制"+headstring}];
+		var dgs = [ {id: "idea", name: "选股依据"},
+					{id: "buys", name: "把握买点"},
+					{id: "sell", name: "把握卖点"},
+					{id: "risk", name: "风险控制"}];
 		function makegrid(item) {
-			var grid = $('#'+item.id+'grid').slickgrid({
-			    columns: [$.extend({field: "name", editor: Slick.Editors.Text, width: 200,headerCssClass:"alert alert-info"},item)],
-			    data: [],slickGridOptions: gridoptions
-			}).data('slickgrid').grid;
-			grid.setSelectionModel(new Slick.RowSelectionModel({selectActiveRow: false}));
 		    var checkboxSelector = new Slick.CheckboxSelectColumn({
 		      cssClass: "slick-cell-checkboxsel"
 		    });
-			grid.onHeaderClick.subscribe(function(e,obj){
+			var grid = $('#'+item.id+'grid').slickgrid({
+			    columns: [checkboxSelector.getColumnDefinition(),
+			    	$.extend({field: "name", editor: Slick.Editors.Text, width: 200,headerCssClass:"alert alert-info"},item)],
+			    data: [],slickGridOptions: gridoptions,	selhand:new Slick.EventHandler()
+			}).data('slickgrid').grid;
+			grid.setSelectionModel(new Slick.RowSelectionModel({selectActiveRow: false}));
+			grid.registerPlugin(checkboxSelector);
+
+/**			grid.onHeaderClick.subscribe(function(e,obj){
 				console.log(obj);
 				var $elm = $(e.target);
 			    var tgrid = obj.grid;
@@ -218,7 +255,7 @@ var detailList = {
 					}
 				}
 			});
-			grid.onAddNewRow.subscribe(function (e, args) {
+*/			grid.onAddNewRow.subscribe(function (e, args) {
 		      var item = args.item,grid = args.grid,data = grid.getData();
 		      grid.invalidateRow(data.length);
 		      data.push(item);
@@ -233,11 +270,30 @@ var detailList = {
 	fillGrid:function() {
 		$.each(["#idea","#buys","#sell","#risk"],function(i, n){
 			var gridObj = $(n+'grid').data('slickgrid');
-			var data = $.parseJSON(localStorage.getItem(user+$('#myLargeModalLabel').data('sid')))||{};
-			if(gridObj && data){
-				gridObj.wrapperOptions.data=data[n.substr(1)]||[];
-				gridObj.grid.setData(data[n.substr(1)]||[]);
-				gridObj.grid.render();
+			var pn = n.substr(1);
+			if(gridObj ){
+				var grid = gridObj.grid;
+				var data = $.parseJSON(localStorage.getItem(user+$('#myLargeModalLabel').data('sid')))||{};
+				if(!data.ver || data.ver == userdata.ver){
+					gridObj.wrapperOptions.data=userdata[pn].slice(0);
+					grid.setData(userdata[pn].slice(0));		
+				}else{
+					var vdata = $.parseJSON(localStorage.getItem(user+data.ver))||{};
+					gridObj.wrapperOptions.data=vdata[pn]||[];
+					grid.setData(vdata[pn]||[]);
+				}
+				grid.render();
+				var _handler = gridObj.wrapperOptions.selhand;
+				_handler.unsubscribeAll();		
+				var chk = data[pn]||[];
+				grid.setSelectedRows(chk);
+				_handler.subscribe(grid.onSelectedRowsChanged,
+          			function(e,obj){
+						var data = $.parseJSON(localStorage.getItem(user+$('#myLargeModalLabel').data('sid')))||{};
+						data[pn] = obj.rows;
+						data.ver = userdata.ver;
+						localStorage.setItem(user+$('#myLargeModalLabel').data('sid'),JSON.stringify(data));
+					});
 			}
 		});
 	}
@@ -312,40 +368,19 @@ var editDialog = {
 	fillGrid:function() {
 		var gridObj = $('#comgrid').trigger("resize.slickgrid").data('slickgrid');
 		var data = $.parseJSON(localStorage.getItem(user+$('#myLargeModalLabel').data('sid')))||{};
+		var com = data.com||[];
 		if(gridObj && data){
-			gridObj.wrapperOptions.data=data.com||[];
-			gridObj.grid.setData(data.com||[]);
+			gridObj.wrapperOptions.data=com;
+			gridObj.grid.setData(com);
 			gridObj.grid.render();
+			gridObj.grid.setActiveCell(com.length,0);
+			gridObj.grid.editActiveCell();
 			$('#tagsgrid').trigger("resize.slickgrid").data('slickgrid').grid.setSelectedRows(data.tag||[]);
 		}
 	}
 };
 
 $(function($) {
-
-
-	$("#stocklist").on("click","div.row",function(e) {
-		// var sid = $(this).data('sid');
-		// if(sid){
-		// 	if($(window).width()>=992){
-		// 		if($(e.target).data('sid')){//click name display kline
-		// 			alert('kline');
-		// 		}else{
-		// 			var alldetail = $("#alldetail");
-		// 			if (alldetail.data('sid') == sid) {
-		// 				alldetail.hide().data('sid',"");
-		// 			}else{
-		// 				$(this).after(alldetail);
-		// 				alldetail.data('sid',sid).show();
-		// 			};	
-		// 		}
-		// 	}else{
-		// 		$("#stocklist").hide();
-		// 		$("#onedetail").show();
-		// 	}			
-		// }
-	});
-
 
 
 	//自动补全股票，添加到列表
@@ -363,50 +398,11 @@ $(function($) {
  			var gridObj = $('#demostock').data('slickgrid');
  			gridObj.wrapperOptions.data.unshift({code:sc})
  			stockList.fillGrid();
+ 			userdata.stocklist = sc+','+userdata.stocklist;
+ 			setud();
  		}
 	});
-	//取数据，生成股票列表
-	function stockrow(sids,$row) {
-		// $.ajax({  
-		//     dataType:'script',  
-		//     url:"http://hq.sinajs.cn/list="+sids,  
-		//     cache: true,
-		//     scriptCharset: 'gbk',
-		//     success: function(msg){  
-		//     	$.each(sids.split(','),function(i, n){ 
-		// 			var sn = 'hq_str_'+n;
-		// 			if(sn in window) {
-		// 				var cc = window[sn].split(',');
-		// 				console.log(cc);
-		// 				if(! $row)
-		// 					$row = $('#demostock').clone().data('sid',n).appendTo("#stocklist");
-		// 				$row.children().each(function( index ) {
-		// 					if(index == 1){
-		// 						if(cc[1]==0)
-		// 							$(this).text(cc[2]);
-		// 						else
-		// 							$(this).text(cc[3]);
-		// 					}else if(index == 2){
-		// 						if(cc[1]==0)
-		// 							$(this).text("--");
-		// 						else
-		// 							$(this).text(Math.round((cc[3]-cc[2])/cc[2]*10000)/100 +'%');
-		// 					}else if(index == 3){
-		// 						if(cc[1]==0)
-		// 							$(this).text("--");
-		// 						else
-		// 							$(this).text(Math.round((cc[3]-cc[2])*100)/100);
-		// 					}else
-		// 				  		$(this).text(cc[index]).data('sid',n);
-		// 				});
-		// 				//(cc[0]+'今开'+cc[1]+'昨收'+cc[2]+'最新'+cc[3]+'<br>');
-		// 			}
-		// 		});
-		//     }  
-		// });
-	}
 
-	//stockrow($('#demostock').data('sid'),$('#demostock'));
 	stockList.createGrid();
 	stockList.fillGrid();
 	detailList.init();
